@@ -1,0 +1,9 @@
+MANIFEST.in
+README.md
+setup.py
+src/ankiproject/__init__.py
+src/ankiproject.egg-info/PKG-INFO
+src/ankiproject.egg-info/SOURCES.txt
+src/ankiproject.egg-info/dependency_links.txt
+src/ankiproject.egg-info/requires.txt
+src/ankiproject.egg-info/top_level.txt

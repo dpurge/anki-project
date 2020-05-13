@@ -1,0 +1,4 @@
+genanki
+Jinja2
+PyYAML
+Markdown

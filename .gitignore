@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.python-version
+.venv
+
+# project related
+dist/
+LangProject.egg-info/
