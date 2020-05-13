@@ -5,4 +5,4 @@ __pycache__/
 
 # project related
 dist/
-LangProject.egg-info/
+ankiproject.egg-info/
