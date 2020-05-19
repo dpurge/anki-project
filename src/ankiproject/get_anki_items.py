@@ -1,9 +1,9 @@
-import os
 import json
 import yaml
 import csv
 
-from .datarecord import Record
+from pathlib import Path
+from .configuration import AnkiItem
 
 def get_format(data):
     format = 'data/unknown'
@@ -19,17 +19,16 @@ def get_text_records(filename):
     with open(filename, mode="r", encoding="utf-8") as f:
         lines = f.readlines()
     for line in lines:
-        meta = {'format': 'data/text'}
         data = line.strip()
-        yield Record(meta = meta, data = data)
-
+        meta = {'format': get_format(data)}
+        yield AnkiItem(meta=meta, data=data)
 
 def get_csv_records(filename):
     with open(filename, mode="r", encoding="utf-8") as f:
-        records = csv.DictReader(f)
+        records = csv.DictReader(f, delimiter="\t")
         for data in records:
             meta = {'format': get_format(data)}
-            yield Record(meta = meta, data = data)
+            yield AnkiItem(meta = meta, data = data)
 
 
 def get_markdown_records(filename):
@@ -38,7 +37,7 @@ def get_markdown_records(filename):
     for record in contents.split("\n---\n"):
         meta = {'format': 'data/markdown'}
         data = record.strip()
-        yield Record(meta = meta, data = data)
+        yield AnkiItem(meta = meta, data = data)
 
 
 def get_json_records(filename):
@@ -46,7 +45,7 @@ def get_json_records(filename):
         records = json.load(f)
     for data in records:
         meta = {'format': get_format(data)}
-        yield Record(meta = meta, data = data)
+        yield AnkiItem(meta = meta, data = data)
 
 
 def get_yaml_records(filename):
@@ -54,25 +53,25 @@ def get_yaml_records(filename):
         records = yaml.safe_load(f)
     for data in records:
         meta = {'format': get_format(data)}
-        yield Record(meta = meta, data = data)
+        yield AnkiItem(meta = meta, data = data)
 
 
 def get_audio_record(filename):
         meta = {'format': 'data/audio'}
         data = filename
-        yield Record(meta = meta, data = data)
+        yield AnkiItem(meta = meta, data = data)
 
 
 def get_video_record(filename):
         meta = {'format': 'data/video'}
         data = filename
-        yield Record(meta = meta, data = data)
+        yield AnkiItem(meta = meta, data = data)
 
 
 def get_image_record(filename):
         meta = {'format': 'data/image'}
         data = filename
-        yield Record(meta = meta, data = data)
+        yield AnkiItem(meta = meta, data = data)
 
 
 readers = {
@@ -86,28 +85,10 @@ readers = {
     '.svg': get_image_record
 }
 
-
-def get_data(records):
-    for record in records:
-        if record.meta['format'] == 'filesystem/file':
-            filename = record.data
-            extension = os.path.splitext(filename)[-1]
-            reader = readers.get(extension, get_text_records)
-            for item in reader(filename):
+def get_anki_items(directory):
+    path = Path(directory)
+    for p in path.rglob("*"):
+        if p.is_file() and p.suffix in readers:
+            reader = readers.get(p.suffix, get_text_records)
+            for item in reader(p):
                 yield item
-        else:
-            yield record
-
-
-def get_files(records):
-    for record in records:
-        if record.meta['format'] == 'filesystem/directory':
-            for subdir, dirs, files in os.walk(record.data):
-                for file in files:
-                    meta = {
-                        'format': 'filesystem/file'
-                    }
-                    data = os.path.join(subdir, file)
-                    yield Record(meta = meta, data = data)
-        else:
-            yield record

@@ -1,16 +1,17 @@
-import os
 import shutil
+from pathlib import Path
 
 
 def create_directories(*directories):
     
     for directory in directories:
-        if (not os.path.exists(directory)):
+        d = Path(directory)
+        if (not d.exists()):
             print(
                 "Creating directory: {directory}".format(
                     directory = directory))
             try:  
-                os.makedirs(directory)
+                d.mkdir(parents = True, exist_ok = True)
             except OSError:  
                 print(
                     "Cannot create directory: {directory}".format(
@@ -20,8 +21,9 @@ def create_directories(*directories):
 def delete_directories(*directories):
         
     for directory in directories:
-        if (os.path.exists(directory)):
+        d = Path(directory)
+        if (d.exists()):
             print(
                 "Deleting directory: {directory}".format(
                     directory = directory))
-            shutil.rmtree(directory)
+            shutil.rmtree(d)
