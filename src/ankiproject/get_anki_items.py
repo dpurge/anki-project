@@ -15,11 +15,33 @@ def get_format(data):
         format = 'data/list'
     return format
 
+
+def get_line_notes(line, notes_start = '(', notes_end = ')'):
+    line = line.strip()
+    if line.endswith(notes_end):
+        text_before, sep, text_after = line.partition(notes_start)
+        if sep:
+            text_after = text_after.rstrip(notes_end)
+            text = text_before.lstrip()
+            notes = text_after.strip()
+        else:
+            text = line
+            notes = None
+    else:
+        text = line
+        notes = None
+
+    return text, notes
+
 def get_text_records(filename):
     with open(filename, mode="r", encoding="utf-8") as f:
         lines = f.readlines()
     for line in lines:
-        data = line.strip()
+        text, notes = get_line_notes(line)
+        data = {
+            'Text': text,
+            'Notes': notes
+        }
         meta = {'format': get_format(data)}
         yield AnkiItem(meta=meta, data=data)
 
