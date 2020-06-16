@@ -1,5 +1,7 @@
+import markdown
 from genanki import Note, guid_for
 
+md = markdown.Markdown()
 
 def get_anki_note(item, model, template):
     fmt = item.meta['format']
@@ -26,10 +28,14 @@ def get_anki_note(item, model, template):
             contents = tpl.render(text = item.data)
         elif fmt == 'data/list':
             contents = tpl.render(items = item.data)
+
+        if template[fieldname]['markdown']:
+            contents = md.convert(contents)
+            md.reset()
         
         fields.append(contents)
 
-    #print(fields)
+    # print(fields)
     return Note(
         guid = guid_for(_id),
         model = model,
