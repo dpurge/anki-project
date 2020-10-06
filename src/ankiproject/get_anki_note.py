@@ -17,6 +17,8 @@ def get_anki_note(item, model, template):
     else:
         raise Exception('Unsupported item format: {fmt}'.format(fmt = fmt))
 
+    tags.insert(0, item.meta['file'])
+
     fields = []
     for f in model.fields:
         fieldname = f['name']

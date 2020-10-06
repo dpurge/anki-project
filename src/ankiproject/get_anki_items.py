@@ -112,5 +112,7 @@ def get_anki_items(directory):
     for p in path.rglob("*"):
         if p.is_file() and p.suffix in readers:
             reader = readers.get(p.suffix, get_text_records)
+            file_tag = "{directory}/{file}".format(directory = p.parent.stem, file = p.stem)
             for item in reader(p):
+                item.meta['file'] = file_tag
                 yield item
